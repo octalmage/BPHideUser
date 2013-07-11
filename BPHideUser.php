@@ -3,7 +3,7 @@
 Plugin Name: BPHideUser
 Plugin URI: http://json.sx/projects/bphideuser/
 Description: This plugin allows you to exclude users from Members List, aswell as the included widgets. 
-Version: 0.1
+Version: 0.2
 Author: Jason Stallings
 Author URI: http://json.sx
 License: GPL2
@@ -30,17 +30,24 @@ function bphideuser_options()
 	$opt_name = 'bpuserarray';
 	$hidden_field_name = 'bpuserfield';
     $data_field_name = 'bpuserarray';
+    
+	$opt_name2 = 'bpwidgetuserarray';
+	$hidden_field_name2 = 'bpwidgetuserfield';
+    $data_field_name2 = 'bpwidgetuserarray';
 
     // Read in existing option value from database
     $opt_val = get_option( $opt_name );
+    $opt_val2 = get_option( $opt_name2 );
     
-     if( isset($_POST[ $hidden_field_name ])) 
+     if( isset($_POST[ $data_field_name ]) || isset($_POST[ $data_field_name2 ])) 
      {
         // Read their posted value
         $opt_val = $_POST[ $data_field_name ];
+        $opt_val2 = $_POST[ $data_field_name2 ];
 
         // Save the posted value in the database
         update_option( $opt_name, $opt_val );
+        update_option( $opt_name2, $opt_val2 );
 
         // Put an settings updated message on the screen
 
@@ -55,9 +62,10 @@ function bphideuser_options()
 	<form name="form1" method="post" action="">
 		<input type="hidden" name="<?php echo $hidden_field_name; ?>" value="Y">
 
-		<p>Comma Separated Excluded User ID List</p>
+		<p>Users Excluded from Directory (comma separated ids)</p>
 			<input type="text" name="<?php echo $data_field_name; ?>" value="<?php echo $opt_val; ?>" size="20">
-		</p>
+		<p>Users Excluded from Member Activity (comma separated ids)</p>
+			<input type="text" name="<?php echo $data_field_name2; ?>" value="<?php echo $opt_val2; ?>" size="20">	
 		<hr />
 
 		<p class="submit">
@@ -95,7 +103,7 @@ function bphideuser_exclude_users($qs=false,$object=false)
 
 function bphideuser_stealth()
 {
-	$excluded_user=explode(",", get_option("bpuserarray"));
+	$excluded_user=explode(",", get_option("bpwidgetuserarray"));
 	$current_user = wp_get_current_user();
 	if(is_user_logged_in()) 
 	{
